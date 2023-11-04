@@ -310,3 +310,40 @@ output 1 if final state in S, 0 otherwise
     - 1. reverse all edges
     - 2. new accepting state is the old entry state
     - 3. add new "dummy" entry state and add $\epsilon$ transitions from it to old accepting states
+- **Def**
+  - *Kleene\* Operation on Functions*
+    - Given $f:\cbrack{0,1}^*\to\cbrack{0,1}$ define the Kleene* of $f$, $f^*:\cbrack{0,1}^*\to\cbrack{0,1}$ by
+      - $f^*(x)=1$ if you can break $x$ into $l$ ordered pieces such that
+        - $f(x_0)=\dots=f(x_{l-1})=1$
+      - and by convention, $f^*(\text{empty string})=1$
+- **Claim**
+  - If $f:\cbrack{0,1}^*\to\cbrack{0,1}$ is computable by a DFA, then $f^*$ is computable by a NFA.
+    - idea 1: add $\epsilon$ transitions from accepting states to the start state
+      - essentially works but does not always satisfy $f^*(\text{empty string})=1$
+      - fix: add dummy start state that is always accepting, and has an $\epsilon$ transition to the acutal start state
+- **Summary**
+  - NFAs are non-detministic
+  - NFAs can simulate CONCAT, REVERSE, and KLEENE*
+- **Theorem**
+  - Every NFA has an equivalent DFA, i.e. for every NFA $N$, there is a DFA $D$ such that $$N(x)=D(x), \forall x$$
+  - **Corollary**
+    - DFAs are able to compute CONCAT and KLEENE* operations
+  - Suppose we have NFA $N$ with states $[C]$, transition function $$T_N:[C]\times \cbrack{0,1,\epsilon}\to Power([C])$$ and accepting states $S_N\subseteq [C]$
+    - define DFA $D$ with:
+      - states = $Power([C])$
+      - transition function $T_D:Power([C])\times\cbrack{0,1}\to Power([C])$ defined $$T_D(I,a)=Eps\left(\bigcup_{i\in I} T_N(i,a) \right)$$
+        - where $Eps(i),i\in [C]$ is all states we can reach from state $i$ by following $\epsilon$ edges and $i$ itself.
+          - if $I\subseteq [C]$, $$Eps(I)=\bigcup_{i\in I} Eps(i)$$ i.e. the union of all states we can reach from each element of $I$ by following $\epsilon$ edges
+      - accepting states $S_D=\cbrack{I\subseteq[C]\mid I\cap S_n\neq \empty}$
+      - start state = $Eps(\cbrack{0})$
+  - Pseudocode for computing NFAs
+    - def computeNFA(x, $T_n$, $S_n$):
+      - state = {0}
+      - for i in range(len(x)):
+        - state = $\bigcup_{j\in state} T_N(j, x[i])$
+      - return 1 if $state\cap S_n\neq \empty$
+        - 0 else
+- Remarks:
+  - if NFA has C states, each step in algo takes about O(C) time
+    - thus we can simulate a NFA of C states on an input of length n in roughly O(nc) time
+  - 
